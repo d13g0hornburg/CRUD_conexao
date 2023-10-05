@@ -1,6 +1,8 @@
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.Scanner;
 
 
@@ -16,18 +18,17 @@ public class Conexao {
             Connection con = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Conectado!");
 
-            String sql = "INSERT INTO aluno (nome, matricula) VALUES (?,?)";
+            String insert = "INSERT INTO aluno (nome, matricula) VALUES (?,?)";
+            String consulta = "SELECT * FROM aluno";
 
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("Digite o nome do aluno");
-            String nomeAluno = sc.nextLine();
-            System.out.println("Digite a matrícula do aluno");
-            int matriculaAluno = sc.nextInt();
+            String nomeAluno = JOptionPane.showInputDialog("Digite o nome do aluno: ");
+            int matriculaAluno = Integer.parseInt(JOptionPane.showInputDialog("Digite a matricula: "));
 
             //Criação da PreparedStatement = preparação dos dados para enviar ao banco
 
-            PreparedStatement stmt = con.prepareStatement(sql);
+            PreparedStatement stmt = con.prepareStatement(insert);
             stmt.setString(1,nomeAluno);
             stmt.setInt(2,matriculaAluno);
 
@@ -35,6 +36,15 @@ public class Conexao {
             int linhasAfetadas = stmt.executeUpdate();
             System.out.println("Dados Inseridos!");
 
+            //Exibe os dados da tabela após a inserção
+            //Statement se refere a consultas (operações) no banco de dados
+
+            ResultSet resultset = stmt.executeQuery(consulta);
+
+            while (resultset.next()){
+                System.out.println("Nome: "+ resultset.getString("nome"));
+                System.out.println("Matrícula: " + resultset.getString("matricula"));
+            }
         } catch (Exception e) {
             System.out.println(e);
 
